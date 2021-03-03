@@ -1,0 +1,52 @@
+#
+# TRENTOS-M i.MX6 SoloX Nitrogen Board U-Boot script
+# Copyright (C) 2020, Hensoldt Cyber GmbH
+#
+#
+# compile script with:
+#     mkimage -A arm -O linux -T script -C none -n "boot script" -a 0 -e 0 \
+#             -d 6x_bootscript.txt 6x_bootscript
+#
+
+# expecting "board=nitrogen6sx, cpu=6SX"
+echo "board=${board}, cpu=${cpu}"
+
+if itest.s "nitrogen6sx" != "${board}" ; then
+    echo "unsupported board";
+    exit;
+elif itest.s "6SX" != "${cpu}" ; then
+    echo "unsupported cpu";
+    exit;
+fi
+
+# DDR RAM base address
+addr_base=0x80000000
+# load to DDR RAM base at offset 56 MiB
+setexpr addr_load  ${addr_base} + 0x3800000
+
+# expecting "dtype=mmc, disk=1, bootpart=1, bootdir="
+echo "dtype=${dtype}, disk=${disk}, bootpart=${bootpart}, bootdir=${bootdir}"
+
+if itest.s "" == "${dtype}" ; then
+    dtype=mmc
+fi
+
+if itest.s "" == "${disk}" ; then
+    disk=0
+fi
+
+if itest.s "" == "${bootpart}" ; then
+    bootpart=1
+fi
+
+if itest.s "" == "${bootdir}" ; then
+    bootdir=/
+fi
+
+
+echo "loading os_image.bin at 0x${addr_load}..."
+if load ${dtype} ${disk}:${bootpart} ${addr_load} ${bootdir}os_image.bin ; then
+    bootelf ${addr_load}
+fi
+
+echo "Error loading os_image.bin"

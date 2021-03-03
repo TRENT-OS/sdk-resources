@@ -1,0 +1,5 @@
+enable_uart=1
+kernel=u-boot.bin
+core_freq=250
+dtparam=spi=on
+enable_jtag_gpio=1
