@@ -2,7 +2,7 @@
 
 ## Scope
 
-This repository contains files related to the i.MX6 platform
+This directory contains files related to the i.MX6 platform
 
 ## Files
 

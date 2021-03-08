@@ -2,7 +2,7 @@
 
 ## Scope
 
-This repository contains files related to the Raspberry Pi platform
+This directory contains files related to the Raspberry Pi platform
 
 ## Files
 These files represent the SD card setup that allows running a custom kernel image on the raspberry (TRENTOS-M image in our case). The required files are:
