@@ -44,9 +44,9 @@ if itest.s "" == "${bootdir}" ; then
 fi
 
 
-echo "loading os_image.bin at 0x${addr_load}..."
-if load ${dtype} ${disk}:${bootpart} ${addr_load} ${bootdir}os_image.bin ; then
+echo "loading os_image.elf at 0x${addr_load}..."
+if load ${dtype} ${disk}:${bootpart} ${addr_load} ${bootdir}os_image.elf ; then
     bootelf ${addr_load}
 fi
 
-echo "Error loading os_image.bin"
+echo "Error loading os_image.elf"
