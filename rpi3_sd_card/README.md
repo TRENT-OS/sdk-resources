@@ -27,4 +27,4 @@ These files represent the SD card setup that allows running a custom kernel imag
   * Printing all available environment variables:
 
         printenv
-  * The deafult baud rate set in the uboot.env file is `115200`
+  * The default baud rate set in the uboot.env file is `115200`
