@@ -89,7 +89,17 @@ class qemu_generic:
 
 #-------------------------------------------------------------------------------
 class qemu_zcu102(qemu_generic):
-    def __init__(self, cpu, memory, res_path, dev_path, serial_ports, sd_card_image):
+    def __init__(self, cpu, memory, res_path, dev_path, sd_card_image, proxy_port):
+        # Adding serial ports for the zcu102 QEMU instance
+        serial_ports = []
+
+        # UART0 is used for system log
+        serial_ports += ['mon:stdio']
+
+        if proxy_port:
+            # UART1 is used for data transfer (e.g. ChanMux backend)
+            serial_ports += ['tcp:localhost:{},server'.format(proxy_port)]
+        
         super().__init__('/opt/xilinx-qemu/bin/qemu-system-aarch64',
                             None, cpu, memory, serial_ports, sd_card_image)
 
@@ -124,6 +134,24 @@ class qemu_microblaze(qemu_generic):
 
 
 #-------------------------------------------------------------------------------
+class ProxyApp:
+    #---------------------------------------------------------------------------
+    def __init__(self, binary, tcp_port):
+        self.binary = binary
+        self.tcp_port = tcp_port
+
+        self.cmd_arr = []
+
+        if self.tcp_port:
+            self.cmd_arr += ['-c', 'TCP:{}'.format(self.tcp_port)]
+
+        # Enable TAP
+        self.cmd_arr += ['-t', '1']
+
+        self.cmd = [ self.binary ] + self.cmd_arr
+
+
+#-------------------------------------------------------------------------------
 def create_sd_img(sd_img_path, sd_img_size, sd_content_list = []):
     # Create SD image file
     #   - Create a binary file and truncate to the received size.
@@ -154,10 +182,14 @@ def main():
 
     parser.add_argument('resource_path', help='Directory containing the zynqmp binaries used during the boot process')
     parser.add_argument('system_image', help='system image, e.g. os_image.elf')
+    parser.add_argument('proxy_app', nargs='?', help='proxy application to use (optional)')
+    parser.add_argument('tcp_port', nargs='?', help='TCP port to use for QEMU - proxy communication')
 
     args = parser.parse_args()
     resource_path = args.resource_path
     system_image = args.system_image
+    proxy_app = args.proxy_app
+    qemu_proxy_port = args.tcp_port if args.tcp_port else 4444
 
     # In order to make sure the correct directory path is passed in, it is enough
     # to check for one of the binaries. We can assume the SDK contains all
@@ -168,6 +200,8 @@ def main():
     if not os.path.isfile(system_image):
         raise Exception('Invalid sytsem image path! The file does not exist!')
 
+    if proxy_app and not os.path.isfile(proxy_app):
+        raise Exception('Invalid proxy path! The file does not exist!')
 
     #---------------------------------------------------------------------------
     out_dir = 'sim_out_{}'.format(datetime.datetime.now().strftime('%Y%m%d-%H%M%S'))
@@ -209,8 +243,12 @@ def main():
                     4096,
                     os.path.join(run_context.resource_dir),
                     run_context.hw_dir,
-                    [],
-                    sd_card_image_fqfn)
+                    sd_card_image_fqfn,
+                    qemu_proxy_port)
+
+    # Initializating the proxy application
+    if proxy_app:
+        proxy_app = ProxyApp(proxy_app, qemu_proxy_port)
 
 
     #---------------------------------------------------------------------------
@@ -220,6 +258,10 @@ def main():
     print('QEMU ZCU: {}'.format(' '.join(qemu_main.cmd)))
     print(' ')
 
+    if proxy_app:
+        print('Proxy: {}'.format(' '.join(proxy_app.cmd)))
+        print(' ')
+
     # Starting the MicroBlaze based PMU QEMU instance
     with open(os.path.join(log_dir,'qemu_pmu_out.txt'), 'w') as fout:
         with open(os.path.join(log_dir,'qemu_pmu_err.txt'), 'w') as ferr:
@@ -227,6 +269,16 @@ def main():
 
     # Starting the ARM based zcu102 QEMU instance
     process_zcu = subprocess.Popen(qemu_main.cmd)
+
+    # Wait for the zcu102 QEMU to fully start
+    time.sleep(1)
+
+    # Starting the proxy application
+    if proxy_app:
+        with open(os.path.join(log_dir,'proxy_out.txt'), 'w') as fout:
+            with open(os.path.join(log_dir,'proxy_err.txt'), 'w') as ferr:
+                process_proxy = subprocess.Popen(proxy_app.cmd, stdout=fout, stderr=ferr)
+
     return_code = process_zcu.wait()
 
 
