@@ -152,6 +152,25 @@ class ProxyApp:
 
 
 #-------------------------------------------------------------------------------
+class CPT:
+    #---------------------------------------------------------------------------
+    def __init__(self, binary, config_file):
+        self.binary = binary
+        self.config_file = config_file
+
+        self.cmd_arr = []
+
+        # Input configuration file
+        self.cmd_arr += ['-i', config_file]
+        # Output pre-provisioned image
+        self.cmd_arr += ['-o', 'nvm_06']
+        # File system used for the pre-provisioned image
+        self.cmd_arr += ['-t', 'FAT']
+
+        self.cmd = [ self.binary ] + self.cmd_arr
+
+
+#-------------------------------------------------------------------------------
 def create_sd_img(sd_img_path, sd_img_size, sd_content_list = []):
     # Create SD image file
     #   - Create a binary file and truncate to the received size.
@@ -184,12 +203,16 @@ def main():
     parser.add_argument('system_image', help='system image, e.g. os_image.elf')
     parser.add_argument('--proxy_app', help='proxy application to use')
     parser.add_argument('--tcp_port', help='TCP port to use for QEMU - proxy communication')
+    parser.add_argument('--cpt', help='Configuration provisioning tool to use')
+    parser.add_argument('--config_file', help='Configuration file (xml) passed to the CPT')
 
     args = parser.parse_args()
     resource_path = args.resource_path
     system_image = args.system_image
     proxy_app = args.proxy_app
     qemu_proxy_port = args.tcp_port if args.tcp_port else 4444
+    cpt_app = args.cpt
+    config_file = args.config_file
 
     # In order to make sure the correct directory path is passed in, it is enough
     # to check for one of the binaries. We can assume the SDK contains all
@@ -202,6 +225,16 @@ def main():
 
     if proxy_app and not os.path.isfile(proxy_app):
         raise Exception('Invalid proxy path! The file does not exist!')
+
+    if cpt_app and not os.path.isfile(cpt_app):
+        raise Exception('Invalid CPT path! The file does not exist!')
+
+    if config_file and not os.path.isfile(config_file):
+        raise Exception('Invalid config file path! The file does not exist!')
+
+    if cpt_app and not config_file:
+        raise Exception('In order to use the configuration provisioning tool, \
+                            please pass the configuration file to provision!')
 
     #---------------------------------------------------------------------------
     out_dir = 'sim_out_{}'.format(datetime.datetime.now().strftime('%Y%m%d-%H%M%S'))
@@ -249,6 +282,17 @@ def main():
     # Initializating the proxy application
     if proxy_app:
         proxy = ProxyApp(proxy_app, qemu_proxy_port)
+
+    # Creating the pre-provisioned nvm image
+    if cpt_app:
+        cpt = CPT(cpt_app, config_file)
+
+        print(' ')
+        print('CPT: {}'.format(' '.join(cpt.cmd)))
+
+        with open(os.path.join(log_dir,'cpt_out.txt'), 'w') as fout:
+            with open(os.path.join(log_dir,'cpt_err.txt'), 'w') as ferr:
+                process_cpt = subprocess.Popen(cpt.cmd, stdout=fout, stderr=ferr)
 
 
     #---------------------------------------------------------------------------
