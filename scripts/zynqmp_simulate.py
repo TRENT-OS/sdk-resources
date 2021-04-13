@@ -210,9 +210,18 @@ def main():
     resource_path = args.resource_path
     system_image = args.system_image
     proxy_app = args.proxy_app
-    qemu_proxy_port = args.tcp_port if args.tcp_port else 4444
     cpt_app = args.cpt
     config_file = args.config_file
+
+    # In case proxy is not used, the tcp_port argument is ignored even
+    # if it exists
+    if proxy_app:
+        if args.tcp_port:
+            qemu_proxy_port = args.tcp_port
+        else:
+            qemu_proxy_port = 4444
+    else:
+        qemu_proxy_port = None
 
     # In order to make sure the correct directory path is passed in, it is enough
     # to check for one of the binaries. We can assume the SDK contains all
