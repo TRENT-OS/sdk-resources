@@ -182,8 +182,8 @@ def main():
 
     parser.add_argument('resource_path', help='Directory containing the zynqmp binaries used during the boot process')
     parser.add_argument('system_image', help='system image, e.g. os_image.elf')
-    parser.add_argument('proxy_app', nargs='?', help='proxy application to use (optional)')
-    parser.add_argument('tcp_port', nargs='?', help='TCP port to use for QEMU - proxy communication')
+    parser.add_argument('--proxy_app', help='proxy application to use')
+    parser.add_argument('--tcp_port', help='TCP port to use for QEMU - proxy communication')
 
     args = parser.parse_args()
     resource_path = args.resource_path
@@ -248,7 +248,7 @@ def main():
 
     # Initializating the proxy application
     if proxy_app:
-        proxy_app = ProxyApp(proxy_app, qemu_proxy_port)
+        proxy = ProxyApp(proxy_app, qemu_proxy_port)
 
 
     #---------------------------------------------------------------------------
@@ -259,7 +259,7 @@ def main():
     print(' ')
 
     if proxy_app:
-        print('Proxy: {}'.format(' '.join(proxy_app.cmd)))
+        print('Proxy: {}'.format(' '.join(proxy.cmd)))
         print(' ')
 
     # Starting the MicroBlaze based PMU QEMU instance
@@ -277,7 +277,7 @@ def main():
     if proxy_app:
         with open(os.path.join(log_dir,'proxy_out.txt'), 'w') as fout:
             with open(os.path.join(log_dir,'proxy_err.txt'), 'w') as ferr:
-                process_proxy = subprocess.Popen(proxy_app.cmd, stdout=fout, stderr=ferr)
+                process_proxy = subprocess.Popen(proxy.cmd, stdout=fout, stderr=ferr)
 
     return_code = process_zcu.wait()
 
