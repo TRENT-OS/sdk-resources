@@ -1,6 +1,6 @@
 #
 # TRENTOS i.MX6 Sabre Lite U-Boot script
-# Copyright (C) 2020, Hensoldt Cyber GmbH
+# Copyright (C) 2020-2021, HENSOLDT Cyber GmbH
 #
 #
 # compile script with:
