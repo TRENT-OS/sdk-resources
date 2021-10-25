@@ -99,7 +99,7 @@ class qemu_zcu102(qemu_generic):
         if proxy_port:
             # UART1 is used for data transfer (e.g. ChanMux backend)
             serial_ports += ['tcp:localhost:{},server'.format(proxy_port)]
-        
+
         super().__init__('/opt/xilinx-qemu/bin/qemu-system-aarch64',
                             None, cpu, memory, serial_ports, sd_card_image)
 
