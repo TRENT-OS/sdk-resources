@@ -1,5 +1,5 @@
 #
-# Custom simulate script used for starting a TRENTOS-M system in QEMU for zynqmp
+# Custom simulate script used for starting a TRENTOS system in QEMU for zynqmp
 #
 # Copyright (C) 2021, HENSOLDT Cyber GmbH
 #

@@ -7,7 +7,7 @@ This directory contains files related to the Xilinx ZCU102 platform.
 ## Files
 
 These files represent the SD card setup that allows running a custom kernel
-image on the Xilinx ZCU102 (TRENTOS-M image in our case). The required files
+image on the Xilinx ZCU102 (TRENTOS image in our case). The required files
 are:
 
 - Device-tree blobs available after building the repository here:

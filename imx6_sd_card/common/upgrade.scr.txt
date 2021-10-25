@@ -1,5 +1,5 @@
 #
-# TRENTOS-M i.MX6 Nitrogen6_SoloX/BD-SL-i.MX6 Board U-Boot upgrade script
+# TRENTOS i.MX6 Nitrogen6_SoloX/BD-SL-i.MX6 Board U-Boot upgrade script
 # Copyright (C) 2020-2021, Hensoldt Cyber GmbH
 #
 #

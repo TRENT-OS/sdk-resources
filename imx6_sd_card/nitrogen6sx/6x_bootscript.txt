@@ -1,5 +1,5 @@
 #
-# TRENTOS-M i.MX6 SoloX Nitrogen Board U-Boot script
+# TRENTOS i.MX6 SoloX Nitrogen Board U-Boot script
 # Copyright (C) 2020, Hensoldt Cyber GmbH
 #
 #

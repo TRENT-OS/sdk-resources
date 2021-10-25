@@ -5,7 +5,7 @@
 This directory contains files related to the Raspberry Pi platform
 
 ## Files
-These files represent the SD card setup that allows running a custom kernel image on the raspberry (TRENTOS-M image in our case). The required files are:
+These files represent the SD card setup that allows running a custom kernel image on the raspberry (TRENTOS image in our case). The required files are:
 - bootcode.bin - Loads GPU firmware and boots GPU, available here:
   * https://github.com/raspberrypi/firmware/tree/master/boot
 

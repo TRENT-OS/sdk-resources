@@ -7,7 +7,7 @@ This directory contains files related to the Raspberry Pi 4 platform.
 ## Files
 
 These files represent the SD card setup that allows running a custom kernel
-image on the Raspberry Pi 4 (TRENTOS-M image in our case). The required files
+image on the Raspberry Pi 4 (TRENTOS image in our case). The required files
 are:
 
 - bcm2711-rpi-4-b.dtb - Device tree blob that holds peripheral information,
