@@ -1,0 +1,8 @@
+setenv load_addr 0x40000000
+
+setenv ipaddr 10.0.0.11
+setenv serverip 10.0.0.10
+
+tftp ${load_addr} os_image.elf
+setenv autostart yes
+bootelf ${load_addr}
