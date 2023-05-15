@@ -100,7 +100,7 @@ class qemu_zcu102(qemu_generic):
             # UART1 is used for data transfer (e.g. ChanMux backend)
             serial_ports += ['tcp:localhost:{},server'.format(proxy_port)]
 
-        super().__init__('/opt/xilinx-qemu/bin/qemu-system-aarch64',
+        super().__init__('/host/build-xilinx-qemu/qemu-system-aarch64',
                             None, cpu, memory, serial_ports, sd_card_image)
 
         if res_path == None:
@@ -113,13 +113,17 @@ class qemu_zcu102(qemu_generic):
             '-device', 'loader,file={}'.format(os.path.join(res_path, 'u-boot.elf')),
             '-global', 'xlnx,zynqmp-boot.cpu-num=0',
             '-global', 'xlnx,zynqmp-boot.use-pmufw=true',
+            '-nic', 'model=cadence_gem',
+            '-nic', 'model=cadence_gem',
+            '-nic', 'model=cadence_gem',
+            '-nic', 'tap,model=cadence_gem,ifname=tap2,script=no',
             '-machine-path', dev_path])
 
 
 #-------------------------------------------------------------------------------
 class qemu_microblaze(qemu_generic):
     def __init__(self, cpu, memory, res_path, dev_path):
-        super().__init__('/opt/xilinx-qemu/bin/qemu-system-microblazeel',
+        super().__init__('/host/build-xilinx-qemu/qemu-system-microblazeel',
                             None, cpu, memory, [], None)
 
         if res_path == None:
