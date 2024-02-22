@@ -1,7 +1,10 @@
 #
 # TRENTOS i.MX6 Nitrogen6_SoloX/BD-SL-i.MX6 Board U-Boot upgrade script
-# Copyright (C) 2020-2021, HENSOLDT Cyber GmbH
+# Copyright (C) 2020-2024, HENSOLDT Cyber GmbH
+# 
+# SPDX-License-Identifier: GPL-2.0-or-later
 #
+# For commercial licensing, contact: info.cyber@hensoldt.net
 #
 # compile script with:
 #     mkimage -A arm -O linux -T script -C none -n "boot script" -a 0 -e 0
